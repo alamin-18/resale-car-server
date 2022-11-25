@@ -23,16 +23,30 @@ app.get('/', async (req, res) => {
 const uri = "mongodb+srv://resaleproduct:p7S9NetalykRy1zy@cluster0.zokrihv.mongodb.net/?retryWrites=true&w=majority";
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
 
+async function run() {
+    try {
+        const usersCollection = client.db('resaleCar').collection('users');
+        app.post('/users', async (req, res) => {
+            const user = req.body;
+            console.log(user);
+            const result = await usersCollection.insertOne(user);
+            res.send(result);
+        });
+    }
+    finally {
 
+    }
+}
+run()
 
 app.listen(port, () => {
     console.log(`resale car server running on ${port}`)
     client.connect(err => {
         if (err) {
             console.log(err);
-          } else {
+        } else {
             console.log("Connected to MongoDB");
-          }
-       
-      });
+        }
+
+    });
 })
