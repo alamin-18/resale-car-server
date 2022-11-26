@@ -28,10 +28,30 @@ async function run() {
         const usersCollection = client.db('resaleCar').collection('users');
         app.post('/users', async (req, res) => {
             const user = req.body;
-            console.log(user);
-            const result = await usersCollection.insertOne(user);
-            res.send(result);
+            // console.log(user);
+            const loginUser = await usersCollection.findOne({
+                email: user.email,
+            });
+            if (!loginUser) {
+                await usersCollection.insertOne(user);
+            }
+            res.status(200).send({
+                msg: "Registration Successfully"
+            });
         });
+
+        app.get('/users', async (req, res) => {
+            const query = {};
+            const users = await usersCollection.find(query).toArray();
+            res.send(users);
+        });
+        // app.get('/users/:role', async (req, res) => {
+        //     const role = req.params.role;
+        //     const query = { role: role };
+        //     const users = await usersCollection.findOne(query);
+        //     res.send(users);
+        // })
+
     }
     finally {
 
