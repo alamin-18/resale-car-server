@@ -102,7 +102,11 @@ async function run() {
             
             res.send(result );
         });
-
+        app.get('/orders', async (req, res) => {
+            const query = {};
+            const orders = await ordersCollection.find(query).toArray();
+            res.send(orders);
+        });
         
 
         // app.get('/users/:role', async (req, res) => {
