@@ -28,6 +28,7 @@ async function run() {
         const usersCollection = client.db('resaleCar').collection('users');
         const productsCollection = client.db('resaleCar').collection('products');
         const advertiseCollection = client.db('resaleCar').collection('advertise');
+        const ordersCollection = client.db('resaleCar').collection('orders');
         app.post('/users', async (req, res) => {
             const user = req.body;
             // console.log(user);
@@ -72,7 +73,6 @@ async function run() {
 
         app.delete('/products/:id', async (req, res) => {
             const id = req.params.id;
-            console.log(id);
             const filter = { _id: ObjectId(id) };
             const result = await productsCollection.deleteOne(filter);
             res.send(result)
@@ -93,6 +93,14 @@ async function run() {
             const query = {};
             const advertise = await advertiseCollection.find(query).toArray();
             res.send(advertise);
+        });
+
+        app.post('/orders', async (req, res) => {
+            const order = req.body;
+            // console.log(user);
+            const result = await ordersCollection.insertOne(order);
+            
+            res.send(result );
         });
 
         
