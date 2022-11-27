@@ -53,7 +53,7 @@ async function run() {
             const products = req.body;
             // console.log(user);
             await productsCollection.insertOne(products);
-            
+
             res.status(200).send({
                 msg: "Products Added Successfully"
             });
@@ -66,7 +66,7 @@ async function run() {
         });
         app.get('/products/:id', async (req, res) => {
             const id = req.params.id;
-            const quyery = { _id: ObjectId(id)};
+            const quyery = { _id: ObjectId(id) };
             const product = await productsCollection.findOne(quyery)
             res.send(product)
         });
@@ -76,14 +76,14 @@ async function run() {
             const filter = { _id: ObjectId(id) };
             const result = await productsCollection.deleteOne(filter);
             res.send(result)
-            
+
         })
 
         app.post('/advertise', async (req, res) => {
             const advertise = req.body;
             // console.log(user);
             await advertiseCollection.insertOne(advertise);
-            
+
             res.status(200).send({
                 msg: "Products Added Successfully"
             });
@@ -94,20 +94,42 @@ async function run() {
             const advertise = await advertiseCollection.find(query).toArray();
             res.send(advertise);
         });
+        app.delete('/advertise/:id', async (req, res) => {
+            
+            try {
+                const id = req.params.id;
+                console.log(id)
+                await advertiseCollection.deleteOne({
+                    _id : id
+                });
+                res.status(200).send({ msg: "Deleted" });
+            }
+            catch (err) {
+                console.log(err)
+            }
+
+        })
 
         app.post('/orders', async (req, res) => {
             const order = req.body;
             // console.log(user);
             const result = await ordersCollection.insertOne(order);
-            
-            res.send(result );
+
+            res.send(result);
         });
         app.get('/orders', async (req, res) => {
             const query = {};
             const orders = await ordersCollection.find(query).toArray();
             res.send(orders);
         });
-        
+
+        // app.get('/products/:catagory', async (req, res) => {
+        //     const catagory = req.params.catagory;
+        //     // const quyery = { _id: ObjectId(id)};
+        //     const catagorys = await productsCollection.toArray(catagory)
+        //     res.send(catagorys)
+        // });
+
 
         // app.get('/users/:role', async (req, res) => {
         //     const role = req.params.role;
