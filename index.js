@@ -29,6 +29,7 @@ async function run() {
         const productsCollection = client.db('resaleCar').collection('products');
         const advertiseCollection = client.db('resaleCar').collection('advertise');
         const ordersCollection = client.db('resaleCar').collection('orders');
+        const catagoryCollection = client.db('resaleCar').collection('catagory');
         app.post('/users', async (req, res) => {
             const user = req.body;
             // console.log(user);
@@ -48,6 +49,14 @@ async function run() {
             const users = await usersCollection.find(query).toArray();
             res.send(users);
         });
+        app.delete('/users/:id', async (req, res) => {
+            const id = req.params.id;
+            console.log(id);
+            const filter = { _id: ObjectId(id) };
+            const result = await usersCollection.deleteOne(filter);
+            res.send(result)
+
+        })
 
         app.post('/products', async (req, res) => {
             const products = req.body;
@@ -95,12 +104,12 @@ async function run() {
             res.send(advertise);
         });
         app.delete('/advertise/:id', async (req, res) => {
-            
+
             try {
                 const id = req.params.id;
                 console.log(id)
                 await advertiseCollection.deleteOne({
-                    _id : id
+                    _id: id
                 });
                 res.status(200).send({ msg: "Deleted" });
             }
@@ -112,16 +121,35 @@ async function run() {
 
         app.post('/orders', async (req, res) => {
             const order = req.body;
-            // console.log(user);
+            
             const result = await ordersCollection.insertOne(order);
 
             res.send(result);
         });
-        app.get('/orders', async (req, res) => {
-            const query = {};
-            const orders = await ordersCollection.find(query).toArray();
-            res.send(orders);
+        
+        
+
+        app.post('/catagory', async (req, res) => {
+            const catagory = req.body;
+            const result = await catagoryCollection.insertOne(catagory);
+            res.send(result);
         });
+
+        app.get('/catagory', async (req, res) => {
+            const query = {};
+            const catagory = await catagoryCollection.find(query).toArray();
+            res.send(catagory);
+        });
+        app.get("/catagory/:id", async (req, res) => {
+            const id = req.params.id;
+            const catagory = await catagoryCollection.findOne({
+              _id: ObjectId(id)
+            });
+            const allProduct = await productsCollection
+              .find({ catagory: catagory.catagory })
+              .toArray();
+            res.status(200).send({ product: allProduct });
+          });
 
         // app.get('/products/:catagory', async (req, res) => {
         //     const catagory = req.params.catagory;
@@ -156,3 +184,21 @@ app.listen(port, () => {
 
     });
 })
+
+/*
+app.get("/api/category/:id", async (req, res) => {
+  const id = req.params.id;
+  //console.log(id);
+
+  const category = await categoryCollection.findOne({
+    _id: ObjectId(id),
+  });
+  //console.log(category.category);
+
+  const allProduct = await productCollection
+    .find({ category: category.category })
+    .toArray();
+  //console.log(allProduct);
+  res.status(200).send({ product: allProduct });
+});
+*/
