@@ -30,6 +30,7 @@ async function run() {
         const advertiseCollection = client.db('resaleCar').collection('advertise');
         const ordersCollection = client.db('resaleCar').collection('orders');
         const catagoryCollection = client.db('resaleCar').collection('catagory');
+        const repotedCollection = client.db('resaleCar').collection('repoted');
         app.post('/users', async (req, res) => {
             const user = req.body;
             // console.log(user);
@@ -127,7 +128,11 @@ async function run() {
             res.send(result);
         });
         
-        
+        app.get('/orders', async (req, res) => {
+            const query = {};
+            const orders = await ordersCollection.find(query).toArray();
+            res.send(orders);
+        });
 
         app.post('/catagory', async (req, res) => {
             const catagory = req.body;
@@ -151,20 +156,33 @@ async function run() {
             res.status(200).send({ product: allProduct });
           });
 
-        // app.get('/products/:catagory', async (req, res) => {
-        //     const catagory = req.params.catagory;
-        //     // const quyery = { _id: ObjectId(id)};
-        //     const catagorys = await productsCollection.toArray(catagory)
-        //     res.send(catagorys)
-        // });
+          app.put('/users/:id', async (req, res) => {
+            const id = req.params.id;
+            console.log(id);
+            const filter = { _id: ObjectId(id) }
+            const options = { upsert: true };
+            const updatedDoc = {
+                $set: {
+                    verified: 'verified'
+                }
+            }
+            const result = await usersCollection.updateOne(filter, updatedDoc, options);
+            res.send(result);
+        });
 
-
-        // app.get('/users/:role', async (req, res) => {
-        //     const role = req.params.role;
-        //     const query = { role: role };
-        //     const users = await usersCollection.findOne(query);
-        //     res.send(users);
-        // })
+        app.post('/repoted', async (req, res) => {
+            const repoted= req.body;
+            // console.log(user);
+            await repotedCollection.insertOne(repoted);
+            res.status(200).send({
+                msg: "repoted Added Successfully"
+            });
+        });
+        app.get('/repoted', async (req, res) => {
+            const query = {};
+            const repoted = await repotedCollection.find(query).toArray();
+            res.send(repoted);
+        });
 
     }
     finally {
